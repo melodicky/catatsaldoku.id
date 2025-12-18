@@ -1,0 +1,49 @@
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background gradient circle -->
+  <defs>
+    <linearGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#10b981;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#14b8a6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#06b6d4;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="gradient2" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#f0fdf4;stop-opacity:1" />
+    </linearGradient>
+    <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#10b981" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+  
+  <!-- Main circle background -->
+  <circle cx="100" cy="100" r="95" fill="url(#gradient1)" filter="url(#shadow)"/>
+  
+  <!-- Wallet body -->
+  <rect x="60" y="80" width="80" height="55" rx="8" fill="url(#gradient2)" opacity="0.95"/>
+  
+  <!-- Wallet fold line -->
+  <line x1="60" y1="100" x2="140" y2="100" stroke="#10b981" stroke-width="2" opacity="0.6"/>
+  
+  <!-- Money symbol $ -->
+  <text x="100" y="118" font-family="Arial, sans-serif" font-size="32" font-weight="bold" fill="#10b981" text-anchor="middle">$</text>
+  
+  <!-- Decorative coins -->
+  <circle cx="75" cy="65" r="12" fill="#fbbf24" opacity="0.9"/>
+  <circle cx="95" cy="60" r="10" fill="#f59e0b" opacity="0.85"/>
+  <circle cx="112" cy="63" r="11" fill="#fbbf24" opacity="0.88"/>
+  
+  <!-- Coin details -->
+  <text x="75" y="69" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#92400e" text-anchor="middle">Rp</text>
+  <text x="95" y="64" font-family="Arial, sans-serif" font-size="8" font-weight="bold" fill="#92400e" text-anchor="middle">Rp</text>
+  <text x="112" y="67" font-family="Arial, sans-serif" font-size="9" font-weight="bold" fill="#92400e" text-anchor="middle">Rp</text>
+  
+  <!-- Card line details on wallet -->
+  <line x1="70" y1="90" x2="90" y2="90" stroke="#10b981" stroke-width="1.5" opacity="0.4"/>
+  <line x1="70" y1="95" x2="110" y2="95" stroke="#10b981" stroke-width="1.5" opacity="0.4"/>
+  
+  <!-- Small sparkles -->
+  <circle cx="145" cy="75" r="2" fill="#ffffff" opacity="0.8"/>
+  <circle cx="155" cy="85" r="1.5" fill="#ffffff" opacity="0.7"/>
+  <circle cx="50" cy="90" r="2" fill="#ffffff" opacity="0.8"/>
+  <circle cx="42" cy="100" r="1.5" fill="#ffffff" opacity="0.7"/>
+</svg>

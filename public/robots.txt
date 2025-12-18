@@ -1,0 +1,17 @@
+# robots.txt for Tabung Aja
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /auth/callback
+Disallow: /_next/
+Disallow: /admin/
+
+# Allow Google Image Bot
+User-agent: Googlebot-Image
+Allow: /
+
+# Crawl-delay for good measure
+Crawl-delay: 0
+
+# Sitemap location
+Sitemap: https://tabungaja.com/sitemap.xml

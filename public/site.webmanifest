@@ -1,0 +1,24 @@
+{
+  "name": "Tabung Aja - Aplikasi Keuangan Pribadi",
+  "short_name": "Tabung Aja",
+  "description": "Tabung aja tanpa ribet! Aplikasi pelacak keuangan pribadi untuk mengelola pemasukan, pengeluaran, dan target tabungan",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#10b981",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["finance", "productivity", "business"],
+  "lang": "id-ID",
+  "dir": "ltr",
+  "scope": "/",
+  "related_applications": [],
+  "prefer_related_applications": false
+}

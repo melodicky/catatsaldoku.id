@@ -1,0 +1,1130 @@
+"use client";
+
+import { useState, useEffect, useRef } from "react";
+import Link from "next/link";
+import {
+  motion,
+  AnimatePresence,
+  useScroll,
+  useTransform,
+} from "framer-motion";
+import {
+  Wallet,
+  ArrowRight,
+  PieChart,
+  TrendingUp,
+  Shield,
+  Globe,
+  Moon,
+  Sun,
+  Target,
+  BarChart3,
+  FileText,
+  Mail,
+  HelpCircle,
+  Users,
+  FileCheck,
+  Star,
+  Quote,
+  Newspaper,
+  Clock,
+  BookOpen,
+  Lightbulb,
+  Menu,
+  X,
+  Zap,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useLanguage } from "@/lib/i18n/context";
+import { useTheme } from "next-themes";
+import { TiltCard } from "@/components/ui/tilt-card";
+import { MagneticButton } from "@/components/ui/magnetic-button";
+import { useConfetti } from "@/hooks/use-confetti";
+import { RippleEffect } from "@/components/ui/ripple-effect";
+import { NeuralNetworkBackground } from "@/components/ui/neural-network";
+
+const backgroundImages = [
+  "https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?w=1920&q=80",
+  "https://images.unsplash.com/photo-1554224311-beee4eed0db4?w=1920&q=80",
+  "https://images.unsplash.com/photo-1560472355-536de3962603?w=1920&q=80",
+  "https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=1920&q=80",
+];
+
+const testimonials = [
+  {
+    id: 1,
+    name: "Sarah Wijaya",
+    role: "Entrepreneur",
+    gender: "female",
+    image: "https://i.pravatar.cc/400?img=45",
+    rating: 5,
+    text_id:
+      "CatatSaldoku benar-benar membantu saya mengatur keuangan bisnis dan pribadi. Dashboard visualnya sangat jelas!",
+    text_en:
+      "This app really helps me manage my business and personal finances. The visual dashboard is very clear!",
+  },
+  {
+    id: 2,
+    name: "Budi Santoso",
+    role: "Freelancer",
+    gender: "male",
+    image: "https://i.pravatar.cc/400?img=12",
+    rating: 5,
+    text_id:
+      "Target tabungan dan analisis pengeluaran membuat saya lebih disiplin dalam mengelola uang.",
+    text_en:
+      "Savings goals and expense analysis make me more disciplined in managing money.",
+  },
+  {
+    id: 3,
+    name: "Dewi Lestari",
+    role: "Teacher",
+    gender: "female",
+    image: "https://i.pravatar.cc/400?img=31",
+    rating: 5,
+    text_id: "Mudah digunakan, aman, dan fiturnya lengkap. Highly recommended!",
+    text_en: "Easy to use, secure, and feature-rich. Highly recommended!",
+  },
+  {
+    id: 4,
+    name: "Ahmad Rizki",
+    role: "Student",
+    gender: "male",
+    image: "https://i.pravatar.cc/400?img=14",
+    rating: 5,
+    text_id:
+      "Sempurna untuk mahasiswa yang ingin belajar mengelola keuangan sejak dini.",
+    text_en: "Perfect for students who want to learn to manage finances early.",
+  },
+  {
+    id: 5,
+    name: "Linda Kusuma",
+    role: "Designer",
+    gender: "female",
+    image: "https://i.pravatar.cc/400?img=47",
+    rating: 5,
+    text_id:
+      "UI/UX-nya keren, fiturnya powerful. CatatSaldoku jadi aplikasi favorit saya!",
+    text_en:
+      "The UI/UX is cool, the features are powerful. CatatSaldoku is my favorite app!",
+  },
+  {
+    id: 6,
+    name: "Eko Prasetyo",
+    role: "Developer",
+    gender: "male",
+    image: "https://i.pravatar.cc/400?img=33",
+    rating: 5,
+    text_id:
+      "Sebagai developer, saya appreciate keamanan data dan performa aplikasi ini.",
+    text_en:
+      "As a developer, I appreciate the data security and performance of this app.",
+  },
+];
+
+const blogPosts = [
+  {
+    id: 1,
+    icon: Lightbulb,
+    category_id: "Tips",
+    category_en: "Tips",
+    title_id: "5 Cara Mengatur Keuangan untuk Pemula",
+    title_en: "5 Ways to Manage Finances for Beginners",
+    excerpt_id:
+      "Pelajari strategi dasar mengelola uang dengan mudah dan efektif untuk mencapai kebebasan finansial.",
+    excerpt_en:
+      "Learn basic strategies to manage money easily and effectively to achieve financial freedom.",
+    date: "2025-01-15",
+    readTime: "5 min",
+    color: "from-amber-500 to-orange-500",
+  },
+  {
+    id: 2,
+    icon: TrendingUp,
+    category_id: "Investasi",
+    category_en: "Investment",
+    title_id: "Memulai Investasi dengan Modal Kecil",
+    title_en: "Start Investing with Small Capital",
+    excerpt_id:
+      "Tidak perlu modal besar untuk berinvestasi. Temukan cara memulai dengan dana yang terbatas.",
+    excerpt_en:
+      "You don't need big capital to invest. Find ways to start with limited funds.",
+    date: "2025-01-12",
+    readTime: "7 min",
+    color: "from-emerald-500 to-teal-500",
+  },
+  {
+    id: 3,
+    icon: Target,
+    category_id: "Planning",
+    category_en: "Planning",
+    title_id: "Merencanakan Dana Darurat yang Ideal",
+    title_en: "Planning an Ideal Emergency Fund",
+    excerpt_id:
+      "Lindungi diri Anda dari kejadian tak terduga dengan dana darurat yang memadai dan terencana.",
+    excerpt_en:
+      "Protect yourself from unexpected events with an adequate and planned emergency fund.",
+    date: "2025-01-10",
+    readTime: "6 min",
+    color: "from-blue-500 to-cyan-500",
+  },
+  {
+    id: 4,
+    icon: BookOpen,
+    category_id: "Edukasi",
+    category_en: "Education",
+    title_id: "Mengenal Jenis-Jenis Pengeluaran Pribadi",
+    title_en: "Understanding Types of Personal Expenses",
+    excerpt_id:
+      "Kategorikan pengeluaran Anda untuk kontrol keuangan yang lebih baik dan hemat maksimal.",
+    excerpt_en:
+      "Categorize your expenses for better financial control and maximum savings.",
+    date: "2025-01-08",
+    readTime: "4 min",
+    color: "from-purple-500 to-pink-500",
+  },
+];
+
+export default function LandingPage() {
+  const { language, setLanguage } = useLanguage();
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [scrollProgress, setScrollProgress] = useState(0);
+  const [showFloatingCTA, setShowFloatingCTA] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const heroRef = useRef<HTMLDivElement>(null);
+  const demoSectionRef = useRef<HTMLDivElement>(null);
+  const { fireConfetti } = useConfetti();
+
+  const { scrollYProgress } = useScroll();
+  const parallaxY = useTransform(scrollYProgress, [0, 1], [0, -200]);
+  const parallaxYSecondary = useTransform(scrollYProgress, [0, 1], [0, 150]);
+
+  const featuresSectionRef = useRef<HTMLDivElement>(null);
+  const featuresScrollTarget = mounted ? featuresSectionRef : undefined;
+
+  const { scrollYProgress: featuresProgress } = useScroll({
+    target: featuresScrollTarget,
+    offset: ["start end", "end start"],
+  });
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prev) => (prev + 1) % backgroundImages.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const totalHeight =
+        document.documentElement.scrollHeight - window.innerHeight;
+      const progress = (window.scrollY / totalHeight) * 100;
+      setScrollProgress(progress);
+
+      const heroHeight = heroRef.current?.offsetHeight || 0;
+      setShowFloatingCTA(window.scrollY > heroHeight);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const features =
+    language === "id"
+      ? [
+          {
+            icon: BarChart3,
+            title: "Dashboard Lengkap",
+            desc: "Pantau saldo, pemasukan, dan pengeluaran dalam satu tampilan",
+          },
+          {
+            icon: PieChart,
+            title: "Analisis Visual",
+            desc: "Grafik interaktif untuk memahami pola keuangan Anda",
+          },
+          {
+            icon: Target,
+            title: "Target Tabungan",
+            desc: "Atur dan capai tujuan keuangan dengan mudah",
+          },
+          {
+            icon: FileText,
+            title: "Ekspor Data",
+            desc: "Unduh laporan ke Excel atau PDF kapan saja",
+          },
+          {
+            icon: Globe,
+            title: "Multi Bahasa",
+            desc: "Mendukung Bahasa Indonesia dan Inggris",
+          },
+          {
+            icon: Shield,
+            title: "Aman & Privat",
+            desc: "Data Anda terenkripsi dan hanya milik Anda",
+          },
+        ]
+      : [
+          {
+            icon: BarChart3,
+            title: "Complete Dashboard",
+            desc: "Monitor balance, income, and expenses in one view",
+          },
+          {
+            icon: PieChart,
+            title: "Visual Analytics",
+            desc: "Interactive charts to understand your financial patterns",
+          },
+          {
+            icon: Target,
+            title: "Savings Goals",
+            desc: "Set and achieve your financial goals easily",
+          },
+          {
+            icon: FileText,
+            title: "Export Data",
+            desc: "Download reports to Excel or PDF anytime",
+          },
+          {
+            icon: Globe,
+            title: "Multi Language",
+            desc: "Supports Indonesian and English",
+          },
+          {
+            icon: Shield,
+            title: "Safe & Private",
+            desc: "Your data is encrypted and only yours",
+          },
+        ];
+
+  if (!mounted) return null;
+
+  return (
+    <>
+      <NeuralNetworkBackground />
+      <RippleEffect />
+      <div className="min-h-screen bg-background">
+        <nav className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-lg border-b border-border">
+          <div
+            className="absolute top-0 left-0 h-0.5 sm:h-1 bg-gradient-to-r from-emerald-500 via-teal-500 to-blue-500 transition-all duration-300"
+            style={{ width: `${scrollProgress}%` }}
+          />
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex items-center justify-between h-14 sm:h-16">
+              <div className="flex items-center gap-2 sm:gap-3">
+                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl gradient-primary flex items-center justify-center">
+                  <Wallet className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+                </div>
+                <span className="text-lg sm:text-xl font-bold">
+                  CatatSaldoku
+                </span>
+              </div>
+
+              <div className="hidden md:flex items-center gap-3">
+                <button
+                  onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                  className="p-2 rounded-lg hover:bg-secondary transition-colors"
+                >
+                  {theme === "dark" ? (
+                    <Sun className="w-5 h-5" />
+                  ) : (
+                    <Moon className="w-5 h-5" />
+                  )}
+                </button>
+                <button
+                  onClick={() => setLanguage(language === "id" ? "en" : "id")}
+                  className="px-3 py-1.5 text-sm font-medium rounded-lg hover:bg-secondary transition-colors"
+                >
+                  {language === "id" ? "EN" : "ID"}
+                </button>
+                <Link href="/auth/login">
+                  <Button variant="ghost" size="sm">
+                    {language === "id" ? "Masuk" : "Login"}
+                  </Button>
+                </Link>
+                <Link href="/auth/register">
+                  <Button size="sm" className="gradient-primary">
+                    {language === "id" ? "Daftar Gratis" : "Sign Up Free"}
+                  </Button>
+                </Link>
+              </div>
+
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="md:hidden p-2 rounded-lg hover:bg-secondary transition-colors"
+              >
+                {mobileMenuOpen ? (
+                  <X className="w-5 h-5 sm:w-6 sm:h-6" />
+                ) : (
+                  <Menu className="w-5 h-5 sm:w-6 sm:h-6" />
+                )}
+              </button>
+            </div>
+          </div>
+
+          <AnimatePresence>
+            {mobileMenuOpen && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                className="md:hidden border-t border-border bg-background/95 backdrop-blur-lg"
+              >
+                <div className="max-w-7xl mx-auto px-4 py-4 space-y-3">
+                  <div className="flex items-center justify-between pb-3 border-b border-border">
+                    <button
+                      onClick={() =>
+                        setTheme(theme === "dark" ? "light" : "dark")
+                      }
+                      className="flex items-center gap-2 p-2 rounded-lg hover:bg-secondary transition-colors w-full"
+                    >
+                      {theme === "dark" ? (
+                        <Sun className="w-5 h-5" />
+                      ) : (
+                        <Moon className="w-5 h-5" />
+                      )}
+                      <span className="text-sm">
+                        {theme === "dark" ? "Light Mode" : "Dark Mode"}
+                      </span>
+                    </button>
+                    <button
+                      onClick={() =>
+                        setLanguage(language === "id" ? "en" : "id")
+                      }
+                      className="px-4 py-2 text-sm font-medium rounded-lg bg-secondary"
+                    >
+                      {language === "id" ? "EN" : "ID"}
+                    </button>
+                  </div>
+                  <Link
+                    href="/auth/login"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-start"
+                      size="lg"
+                    >
+                      {language === "id" ? "Masuk" : "Login"}
+                    </Button>
+                  </Link>
+                  <Link
+                    href="/auth/register"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <Button className="w-full gradient-primary" size="lg">
+                      {language === "id" ? "Daftar Gratis" : "Sign Up Free"}
+                    </Button>
+                  </Link>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </nav>
+
+        <section
+          ref={heroRef}
+          className="relative pt-24 sm:pt-32 pb-16 sm:pb-20 overflow-hidden"
+        >
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentImageIndex}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 0.25 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 1.5 }}
+              className="absolute inset-0 z-0"
+              style={{
+                backgroundImage: `url(${backgroundImages[currentImageIndex]})`,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+                filter: "blur(15px)",
+                y: parallaxY,
+              }}
+            />
+          </AnimatePresence>
+          <div className="absolute inset-0 bg-gradient-to-b from-background via-background/90 to-background" />
+          <motion.div
+            className="absolute top-1/4 left-1/4 w-64 h-64 sm:w-96 sm:h-96 bg-emerald-500/20 rounded-full blur-3xl animate-pulse-slow"
+            style={{ y: parallaxY }}
+          />
+          <motion.div
+            className="absolute bottom-1/4 right-1/4 w-64 h-64 sm:w-96 sm:h-96 bg-blue-500/20 rounded-full blur-3xl animate-pulse-slow"
+            style={{ animationDelay: "1.5s", y: parallaxYSecondary }}
+          />
+
+          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center max-w-4xl mx-auto">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+              >
+                <span className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-primary/10 text-primary text-xs sm:text-sm font-medium mb-4 sm:mb-6">
+                  <TrendingUp className="w-3 h-3 sm:w-4 sm:h-4" />
+                  {language === "id"
+                    ? "Aplikasi Keuangan Pribadi #1"
+                    : "#1 Personal Finance App"}
+                </span>
+              </motion.div>
+
+              <motion.h1
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.1 }}
+                className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6 leading-tight"
+                style={{
+                  textShadow:
+                    "0 0 40px rgba(16, 185, 129, 0.3), 0 0 80px rgba(16, 185, 129, 0.2)",
+                }}
+              >
+                {language === "id" ? (
+                  <>
+                    <motion.span
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.8, delay: 0.2 }}
+                    >
+                      Kelola Keuangan Anda
+                    </motion.span>
+                    <br />
+                    <motion.span
+                      className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 animate-gradient-x"
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ duration: 0.8, delay: 0.4 }}
+                      style={{
+                        filter: "drop-shadow(0 0 30px rgba(16, 185, 129, 0.7))",
+                      }}
+                    >
+                      Dengan Mudah & Cerdas
+                    </motion.span>
+                  </>
+                ) : (
+                  <>
+                    <motion.span
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.8, delay: 0.2 }}
+                    >
+                      Manage Your Finances
+                    </motion.span>
+                    <br />
+                    <motion.span
+                      className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 animate-gradient-x"
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ duration: 0.8, delay: 0.4 }}
+                      style={{
+                        filter: "drop-shadow(0 0 30px rgba(16, 185, 129, 0.7))",
+                      }}
+                    >
+                      Easily & Smartly
+                    </motion.span>
+                  </>
+                )}
+              </motion.h1>
+
+              <motion.p
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                className="text-sm sm:text-base md:text-lg lg:text-xl text-muted-foreground mb-6 sm:mb-8 max-w-2xl mx-auto"
+              >
+                {language === "id"
+                  ? "Catat pemasukan & pengeluaran, analisis visual, target tabungan, dan ekspor laporan. Semua dalam satu aplikasi yang aman dan mudah digunakan."
+                  : "Track income & expenses, visual analytics, savings goals, and export reports. All in one secure and easy-to-use app."}
+              </motion.p>
+
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.3 }}
+                className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center"
+              >
+                <Link href="/auth/register" className="w-full sm:w-auto">
+                  <MagneticButton>
+                    <Button
+                      size="lg"
+                      className="gradient-primary w-full sm:w-auto text-base sm:text-lg h-12 sm:h-14 px-6 sm:px-8 hover-glow relative overflow-hidden group"
+                      onClick={() => fireConfetti("fireworks")}
+                    >
+                      <span className="relative z-10 flex items-center">
+                        {language === "id"
+                          ? "Mulai Gratis Sekarang"
+                          : "Start Free Now"}
+                        <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                      </span>
+                      <motion.div
+                        className="absolute inset-0 bg-gradient-to-r from-emerald-400 to-teal-400"
+                        initial={{ x: "-100%" }}
+                        whileHover={{ x: 0 }}
+                        transition={{ duration: 0.3 }}
+                      />
+                    </Button>
+                  </MagneticButton>
+                </Link>
+                <Link href="/auth/login" className="w-full sm:w-auto">
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    className="w-full sm:w-auto text-base sm:text-lg h-12 sm:h-14 px-6 sm:px-8"
+                  >
+                    {language === "id"
+                      ? "Sudah Punya Akun"
+                      : "I Have an Account"}
+                  </Button>
+                </Link>
+              </motion.div>
+            </div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.5 }}
+              className="mt-10 sm:mt-16 relative"
+            >
+              <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent z-10 pointer-events-none" />
+              <div className="bg-card rounded-xl sm:rounded-2xl border shadow-2xl overflow-hidden mx-auto max-w-5xl">
+                <div className="bg-secondary/50 px-3 sm:px-4 py-2 sm:py-3 flex items-center gap-1.5 sm:gap-2 border-b">
+                  <div className="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-rose-500" />
+                  <div className="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-amber-500" />
+                  <div className="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-emerald-500" />
+                </div>
+                <div className="p-4 sm:p-6 bg-gradient-to-br from-card to-secondary/20">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-4 sm:mb-6">
+                    {[
+                      {
+                        label:
+                          language === "id" ? "Saldo Total" : "Total Balance",
+                        value: "Rp 15.750.000",
+                        color: "text-emerald-500",
+                        glow: "rgba(16, 185, 129",
+                      },
+                      {
+                        label: language === "id" ? "Pemasukan" : "Income",
+                        value: "Rp 8.500.000",
+                        color: "text-blue-500",
+                        glow: "rgba(59, 130, 246",
+                      },
+                      {
+                        label: language === "id" ? "Pengeluaran" : "Expenses",
+                        value: "Rp 3.250.000",
+                        color: "text-rose-500",
+                        glow: "rgba(244, 63, 94",
+                      },
+                    ].map((item, i) => (
+                      <motion.div
+                        key={i}
+                        className="bg-background/50 rounded-lg sm:rounded-xl p-3 sm:p-4 backdrop-blur-sm relative overflow-hidden group cursor-pointer"
+                        whileHover={{ scale: 1.05, y: -5 }}
+                          transition={{
+                            type: "spring",
+                            stiffness: 300,
+                            duration: 2,
+                            repeat: Infinity,
+                            delay: i * 0.3,
+                          }}
+                      >
+                        <p className="text-xs sm:text-sm text-muted-foreground">
+                          {item.label}
+                        </p>
+                        <motion.p
+                          className={`text-base sm:text-xl font-bold ${item.color}`}
+                          animate={{
+                            textShadow: [
+                              `0 0 0px ${item.glow}, 0)`,
+                              `0 0 10px ${item.glow}, 0.8)`,
+                              `0 0 0px ${item.glow}, 0)`,
+                            ],
+                          }}
+                          transition={{
+                            duration: 2,
+                            repeat: Infinity,
+                            delay: i * 0.3,
+                          }}
+                        >
+                          {item.value}
+                        </motion.p>
+                      </motion.div>
+                    ))}
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                    <div className="bg-background/50 rounded-lg sm:rounded-xl p-3 sm:p-4 backdrop-blur-sm h-32 sm:h-40">
+                      <p className="text-xs sm:text-sm font-medium mb-2">
+                        {language === "id"
+                          ? "Pengeluaran per Kategori"
+                          : "Expenses by Category"}
+                      </p>
+                      <div className="flex items-center justify-center h-20 sm:h-24">
+                        <div className="w-16 h-16 sm:w-24 sm:h-24 rounded-full border-4 sm:border-8 border-emerald-500 border-t-blue-500 border-r-amber-500 border-b-rose-500" />
+                      </div>
+                    </div>
+                    <div className="bg-background/50 rounded-lg sm:rounded-xl p-3 sm:p-4 backdrop-blur-sm h-32 sm:h-40">
+                      <p className="text-xs sm:text-sm font-medium mb-2">
+                        {language === "id" ? "Tren Bulanan" : "Monthly Trend"}
+                      </p>
+                      <div className="flex items-end justify-around h-20 sm:h-24 gap-1 sm:gap-2">
+                        {[40, 65, 45, 80, 55, 70].map((h, i) => (
+                          <div
+                            key={i}
+                            className="w-4 sm:w-8 bg-gradient-to-t from-emerald-500 to-teal-500 rounded-t"
+                            style={{ height: `${h}%` }}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </section>
+
+        <section
+          ref={featuresSectionRef}
+          className="py-12 sm:py-20 bg-secondary/30 scroll-3d-container relative overflow-hidden"
+        >
+          <div className="scroll-3d-parallax-bg">
+            {[...Array(15)].map((_, i) => (
+              <motion.div
+                key={i}
+                className="floating-particles"
+                style={{
+                  left: `${Math.random() * 100}%`,
+                  top: `${Math.random() * 100}%`,
+                  background: `rgba(16, 185, 129, ${0.3 + Math.random() * 0.4})`,
+                  animationDelay: `${i * 0.3}s`,
+                  animationDuration: `${6 + Math.random() * 4}s`,
+                }}
+              />
+            ))}
+          </div>
+
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="text-center mb-10 sm:mb-16"
+            >
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4">
+                {language === "id"
+                  ? "Fitur Lengkap untuk Anda"
+                  : "Complete Features for You"}
+              </h2>
+              <p className="text-sm sm:text-base text-muted-foreground max-w-2xl mx-auto">
+                {language === "id"
+                  ? "Semua yang Anda butuhkan untuk mengelola keuangan pribadi dengan baik"
+                  : "Everything you need to manage your personal finances well"}
+              </p>
+            </motion.div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+              {features.map((feature, idx) => (
+                <motion.div
+                  key={idx}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: idx * 0.1 }}
+                >
+                  <TiltCard className="bg-card border rounded-xl sm:rounded-2xl p-6 hover:shadow-lg transition-shadow">
+                    <feature.icon className="w-12 h-12 text-primary mb-4" />
+                    <h3 className="text-lg font-bold mb-2">{feature.title}</h3>
+                    <p className="text-sm text-muted-foreground">
+                      {feature.desc}
+                    </p>
+                  </TiltCard>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section
+          ref={demoSectionRef}
+          className="py-12 sm:py-20 bg-secondary/30"
+        >
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="text-center mb-10 sm:mb-16"
+            >
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4">
+                {language === "id"
+                  ? "Apa Kata Pengguna Kami"
+                  : "What Our Users Say"}
+              </h2>
+              <p className="text-sm sm:text-base text-muted-foreground max-w-2xl mx-auto">
+              {language === "id"
+                  ? "Ribuan pengguna telah mempercayai CatatSaldoku untuk mengelola keuangan mereka"
+                  : "Thousands of users have trusted CatatSaldoku to manage their finances"}
+                </p>
+            </motion.div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+              {testimonials.map((testimonial, index) => (
+                <motion.div
+                  key={testimonial.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.1 }}
+                >
+                  <TiltCard className="bg-card border rounded-xl sm:rounded-2xl p-4 sm:p-6 relative overflow-hidden group h-full">
+                    <div className="relative z-10">
+                      <div className="absolute top-4 right-4">
+                        <Quote className="w-10 h-10 sm:w-12 sm:h-12 text-primary/10" />
+                      </div>
+
+                      <div className="flex items-center gap-0.5 sm:gap-1 mb-3 sm:mb-4">
+                        {[...Array(testimonial.rating)].map((_, i) => (
+                          <Star
+                            key={i}
+                            className="w-3.5 h-3.5 sm:w-4 sm:h-4 fill-amber-500 text-amber-500"
+                          />
+                        ))}
+                      </div>
+
+                      <p className="text-sm sm:text-base text-muted-foreground mb-4 sm:mb-6">
+                        {language === "id"
+                          ? testimonial.text_id
+                          : testimonial.text_en}
+                      </p>
+
+                      <div className="flex items-center gap-2 sm:gap-3">
+                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full overflow-hidden ring-2 ring-primary/20 shrink-0">
+                          <img
+                            src={testimonial.image}
+                            alt={testimonial.name}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                        <div>
+                          <p className="text-sm sm:text-base font-semibold">
+                            {testimonial.name}
+                          </p>
+                          <p className="text-xs sm:text-sm text-muted-foreground">
+                            {testimonial.role}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </TiltCard>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="py-12 sm:py-20">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="text-center mb-10 sm:mb-16"
+            >
+              <Newspaper className="w-8 h-8 sm:w-10 sm:h-10 mx-auto mb-3 sm:mb-4 text-primary" />
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4">
+                {language === "id"
+                  ? "Tips & Berita Keuangan"
+                  : "Financial Tips & News"}
+              </h2>
+              <p className="text-sm sm:text-base text-muted-foreground max-w-2xl mx-auto">
+                {language === "id"
+                  ? "Baca artikel terbaru tentang tips keuangan, investasi, dan strategi mengelola uang"
+                  : "Read the latest articles on financial tips, investment, and money management strategies"}
+              </p>
+            </motion.div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+              {blogPosts.map((post, index) => (
+                <motion.article
+                  key={post.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.1 }}
+                  className="bg-card border rounded-xl sm:rounded-2xl overflow-hidden group cursor-pointer"
+                >
+                  <div
+                    className={`h-1.5 sm:h-2 bg-gradient-to-r ${post.color}`}
+                  />
+                  <div className="p-4 sm:p-6">
+                    <div className="flex items-center gap-2 mb-3">
+                      <div
+                        className={`p-1.5 sm:p-2 rounded-lg bg-gradient-to-br ${post.color} bg-opacity-10`}
+                      >
+                        <post.icon className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+                      </div>
+                      <span className="text-xs font-semibold text-primary">
+                        {language === "id"
+                          ? post.category_id
+                          : post.category_en}
+                      </span>
+                    </div>
+                    <h3 className="font-bold text-base sm:text-lg mb-2 line-clamp-2">
+                      {language === "id" ? post.title_id : post.title_en}
+                    </h3>
+                    <p className="text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4 line-clamp-3">
+                      {language === "id" ? post.excerpt_id : post.excerpt_en}
+                    </p>
+                    <div className="flex items-center justify-between text-xs text-muted-foreground pt-3 sm:pt-4 border-t">
+                      <div className="flex items-center gap-1">
+                        <Clock className="w-3 h-3" />
+                        <span>{post.readTime}</span>
+                      </div>
+                      <span>
+                        {new Date(post.date).toLocaleDateString(
+                          language === "id" ? "id-ID" : "en-US",
+                          { month: "short", day: "numeric" },
+                        )}
+                      </span>
+                    </div>
+                  </div>
+                </motion.article>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="py-12 sm:py-20 bg-secondary/30">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="text-center bg-gradient-to-r from-emerald-600 to-teal-500 rounded-2xl sm:rounded-3xl p-8 sm:p-12 relative overflow-hidden"
+            >
+              <div className="absolute inset-0 gradient-mesh opacity-30" />
+              <div className="relative z-10">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-3 sm:mb-4">
+                  {language === "id"
+                    ? "Siap Mengelola Keuangan Anda?"
+                    : "Ready to Manage Your Finances?"}
+                </h2>
+                <p className="text-sm sm:text-base text-white/90 max-w-2xl mx-auto mb-6 sm:mb-8">
+                  {language === "id"
+                    ? "Daftar gratis sekarang dan mulai perjalanan keuangan yang lebih baik."
+                    : "Sign up for free now and start your better financial journey."}
+                </p>
+                <Link href="/auth/register">
+                  <Button
+                    size="lg"
+                    className="bg-white text-emerald-600 hover:bg-white/90 text-base sm:text-lg h-12 sm:h-14 px-6 sm:px-8"
+                  >
+                    {language === "id" ? "Daftar Gratis" : "Sign Up Free"}
+                    <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 ml-2" />
+                  </Button>
+                </Link>
+              </div>
+            </motion.div>
+          </div>
+        </section>
+
+        <AnimatePresence>
+          {showFloatingCTA && (
+            <motion.div
+              initial={{ opacity: 0, y: 100 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 100 }}
+              className="fixed bottom-4 left-4 right-4 sm:bottom-8 sm:left-auto sm:right-8 z-40"
+            >
+              <Link href="/auth/register">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="gradient-primary text-white px-4 py-3 sm:px-6 sm:py-4 rounded-full shadow-2xl flex items-center justify-center gap-2 font-semibold hover:shadow-emerald-500/50 transition-shadow w-full sm:w-auto text-sm sm:text-base"
+                >
+                  <Wallet className="w-4 h-4 sm:w-5 sm:h-5" />
+                  <span>
+                    {language === "id" ? "Daftar Sekarang" : "Sign Up Now"}
+                  </span>
+                  <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
+                </motion.button>
+              </Link>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <footer className="bg-secondary/30 border-t border-border">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8">
+              <div className="space-y-3 sm:space-y-4">
+                <div className="flex items-center gap-2 sm:gap-3">
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl gradient-primary flex items-center justify-center">
+                    <Wallet className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+                  </div>
+                  <span className="text-lg sm:text-xl font-bold">
+                    CatatSaldoku
+                  </span>
+                </div>
+                <p className="text-xs sm:text-sm text-muted-foreground">
+                  {language === "id"
+                    ? "Tabung aja tanpa ribet! Aplikasi keuangan pribadi yang profesional dan aman."
+                    : "Just save! Professional and secure personal finance tracker app."}
+                </p>
+              </div>
+
+              <div>
+                <h3 className="font-semibold mb-3 sm:mb-4 text-sm sm:text-base">
+                  {language === "id" ? "Produk" : "Product"}
+                </h3>
+                <ul className="space-y-2 text-xs sm:text-sm">
+                  <li>
+                    <Link
+                      href="/"
+                      className="text-muted-foreground hover:text-primary transition-colors"
+                    >
+                      {language === "id" ? "Beranda" : "Home"}
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      href="/auth/register"
+                      className="text-muted-foreground hover:text-primary transition-colors"
+                    >
+                      {language === "id" ? "Daftar" : "Sign Up"}
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      href="/auth/login"
+                      className="text-muted-foreground hover:text-primary transition-colors"
+                    >
+                      {language === "id" ? "Masuk" : "Login"}
+                    </Link>
+                  </li>
+                </ul>
+              </div>
+
+              <div>
+                <h3 className="font-semibold mb-3 sm:mb-4 text-sm sm:text-base">
+                  {language === "id" ? "Bantuan" : "Help"}
+                </h3>
+                <ul className="space-y-2 text-xs sm:text-sm">
+                  <li>
+                    <button className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-2">
+                      <HelpCircle className="w-3 h-3 sm:w-4 sm:h-4" />
+                      <span>
+                        {language === "id" ? "Pertanyaan Umum" : "FAQ"}
+                      </span>
+                    </button>
+                  </li>
+                  <li>
+                    <button className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-2">
+                      <Users className="w-3 h-3 sm:w-4 sm:h-4" />
+                      <span>
+                        {language === "id" ? "Tentang Kami" : "About Us"}
+                      </span>
+                    </button>
+                  </li>
+                  <li>
+                    <button className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-2">
+                      <Mail className="w-3 h-3 sm:w-4 sm:h-4" />
+                      <span>
+                        {language === "id" ? "Hubungi Kami" : "Contact Us"}
+                      </span>
+                    </button>
+                  </li>
+                </ul>
+              </div>
+
+              <div>
+                <h3 className="font-semibold mb-3 sm:mb-4 text-sm sm:text-base">
+                  {language === "id" ? "Legal" : "Legal"}
+                </h3>
+                <ul className="space-y-2 text-xs sm:text-sm">
+                  <li>
+                    <button className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-2">
+                      <FileCheck className="w-3 h-3 sm:w-4 sm:h-4" />
+                      <span>
+                        {language === "id"
+                          ? "Kebijakan Privasi"
+                          : "Privacy Policy"}
+                      </span>
+                    </button>
+                  </li>
+                  <li>
+                    <button className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-2">
+                      <FileText className="w-3 h-3 sm:w-4 sm:h-4" />
+                      <span>
+                        {language === "id"
+                          ? "Syarat & Ketentuan"
+                          : "Terms of Service"}
+                      </span>
+                    </button>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <div className="mt-8 sm:mt-12 pt-6 sm:pt-8 border-t border-border">
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div className="flex flex-col items-center sm:items-start gap-2">
+                  <p className="text-xs sm:text-sm text-muted-foreground text-center sm:text-left">
+                    &copy; {new Date().getFullYear()} CatatSaldoku Official.{" "}
+                    {language === "id"
+                      ? "Hak cipta dilindungi."
+                      : "All rights reserved."}
+                  </p>
+                  <motion.a
+                    href="https://tokomrd.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    whileHover={{ scale: 1.05 }}
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-violet-600 via-purple-600 to-fuchsia-600 text-white text-xs sm:text-sm font-bold shadow-lg hover:shadow-purple-500/50 transition-all"
+                  >
+                    <Zap className="w-3 h-3 sm:w-4 sm:h-4" />
+                    <span className="bg-clip-text text-transparent bg-gradient-to-r from-white to-purple-100">
+                      Supported by TokoMRD
+                    </span>
+                    <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4" />
+                  </motion.a>
+                </div>
+                <div className="flex items-center gap-3 sm:gap-4">
+                  <button className="text-muted-foreground hover:text-primary transition-colors">
+                    <svg
+                      className="w-4 h-4 sm:w-5 sm:h-5"
+                      fill="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+                    </svg>
+                  </button>
+                  <button className="text-muted-foreground hover:text-primary transition-colors">
+                    <svg
+                      className="w-4 h-4 sm:w-5 sm:h-5"
+                      fill="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z" />
+                    </svg>
+                  </button>
+                  <button className="text-muted-foreground hover:text-primary transition-colors">
+                    <svg
+                      className="w-4 h-4 sm:w-5 sm:h-5"
+                      fill="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </footer>
+      </div>
+    </>
+  );
+}
